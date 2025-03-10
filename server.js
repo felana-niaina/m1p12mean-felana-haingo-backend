@@ -15,3 +15,11 @@ mongoose.connect(process.env.MONGO_URI, {
  useUnifiedTopology: true
 }).then(() => console.log("MongoDB connecté"))
  .catch(err => console.log(err));
+
+// Routes
+app.use("/api/user", require("./routes/userRoutes"));
+app.use("/api/roles", require("./routes/roleRoutes"));
+
+
+app.listen(PORT, () => console.log(`Serveur démarré sur le port
+${PORT}`));
