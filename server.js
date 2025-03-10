@@ -5,6 +5,10 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const indexRoutes = require("./routes/index");
+const userRoutes = require("./routes/userRoutes");
+const roleRoutes = require("./routes/roleRoutes");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -17,9 +21,9 @@ mongoose.connect(process.env.MONGO_URI, {
  .catch(err => console.log(err));
 
 // Routes
-app.use("/", require("./routes/index"));
-app.use("/api/user", require("./routes/userRoutes"));
-app.use("/api/roles", require("./routes/roleRoutes"));
+app.use("/", indexRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/roles", roleRoutes);
 
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
