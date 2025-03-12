@@ -1,4 +1,4 @@
-import { SECRET_JWT_CODE } from "../constant/utils";
+const { SECRET_JWT_CODE } = require("../constant/utils");
 const User = require("../models/User");
 const Role = require("../models/Role");
 const bcrypt = require("bcryptjs");

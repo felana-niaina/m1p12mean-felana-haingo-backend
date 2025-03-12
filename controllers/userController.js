@@ -2,11 +2,33 @@ const User = require("../models/User");
 const Role = require("../models/Role");
 
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const { mailConfig } = require("../constant/utils");
+
+let transporter = nodemailer.createTransport(mailConfig);
 
 exports.register = async (req, res) => {
   try {
     const { name, email, phone, password, role, specialty, employees, vehicles } = req.body;
+
+    let mailOption = {
+      from: "nirina.felananiaina@gmail.com",
+      to: email,
+      subject: "Car repairing",
+      html: `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Document</title>
+                </head>
+                <body>
+                    <h3>Bienvenue chez repairing car service</h3>
+                    <p>Veuillez cliquer le bouton ci-dessous pour consulter votre profil :</p>
+                    <button><a href="">Consulter</a></button>
+                </body>
+                </html>`,
+    };
 
     // Vérifier si l'utilisateur existe déjà
     let userExists = await User.findOne({ email });
@@ -32,6 +54,14 @@ exports.register = async (req, res) => {
       });
 
     await newUser.save();
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        return console.log("error sendMail ::::", error.message);
+      }
+      console.log("mail sent !");
+    });
+
+    
     res.status(201).json({ message: "Utilisateur créé avec succès" });
 
   } catch (error) {
