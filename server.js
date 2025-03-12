@@ -13,6 +13,7 @@ const repairRoutes = require("./routes/repairRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const vehicleRoutes = require("./routes/vehicleRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // Middleware
 app.use(cors());
@@ -34,6 +35,7 @@ app.use("/repairs", repairRoutes);
 app.use("/invoices", invoiceRoutes);
 app.use("/vehicles", vehicleRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/auth", notificationRoutes);
 
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port

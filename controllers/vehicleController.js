@@ -7,15 +7,22 @@ exports.createVehicle = async (req, res) => {
     const { ownerId, model } = req.body;
 
     // Vérifier si l'utilisateur existe et est un client
-    const user = await User.findById(ownerId);
-    if (!user || user.role !== "client") {
-      return res.status(400).json({ message: "Propriétaire invalide" });
+    const user = await User.findById(ownerId).populate("role");
+
+    if (!user || user.role.name !== "client") {
+    return res.status(400).json({ message: "Propriétaire invalide" });
     }
 
     // Créer le véhicule
     const newVehicle = new Vehicle({ ownerId, model });
     await newVehicle.save();
 
+    // Mettre à jour l'utilisateur pour ajouter le véhicule dans le tableau "vehicles"
+    await User.updateOne(
+        { _id: ownerId },
+        { $push: { vehicles: newVehicle._id } } // Ajoute l'ID du véhicule à l'utilisateur
+      );
+      
     res.status(201).json({ message: "Véhicule ajouté avec succès", vehicle: newVehicle });
 
   } catch (error) {
