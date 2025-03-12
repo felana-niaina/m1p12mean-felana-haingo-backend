@@ -8,6 +8,11 @@ const PORT = process.env.PORT || 5000;
 const indexRoutes = require("./routes/index");
 const userRoutes = require("./routes/userRoutes");
 const roleRoutes = require("./routes/roleRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+const repairRoutes = require("./routes/repairRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const vehicleRoutes = require("./routes/vehicleRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 // Middleware
 app.use(cors());
@@ -22,8 +27,13 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use("/", indexRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/roles", roleRoutes);
+app.use("/users", userRoutes);
+app.use("/roles", roleRoutes);
+app.use("/appointments", appointmentRoutes);
+app.use("/repairs", repairRoutes);
+app.use("/invoices", invoiceRoutes);
+app.use("/vehicles", vehicleRoutes);
+app.use("/notifications", notificationRoutes);
 
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
