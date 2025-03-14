@@ -9,8 +9,8 @@ let transporter = nodemailer.createTransport(mailConfig);
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone, password, role, specialty, employees, vehicles } = req.body;
-
+    const { name, email, phone, password, role, specialty, employees, vehicles } = req.body.data;
+    console.log(req.body.data)
     let mailOption = {
       from: "nirina.felananiaina@gmail.com",
       to: email,
