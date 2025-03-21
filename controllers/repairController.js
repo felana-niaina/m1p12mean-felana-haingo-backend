@@ -1,4 +1,4 @@
-import Repair from "../models/Repair";
+import Repair from "../models/Repair.js";
 
 // Créer une réparation
 export const createRepair = async (req, res) => {
