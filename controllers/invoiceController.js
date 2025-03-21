@@ -1,14 +1,15 @@
-const Invoice = require("../models/Invoice");
-const Repair = require("../models/Repair");
+import Invoice from "../models/Invoice.js";
+import Repair from "../models/Repair.js";
 
 //  Créer une facture
-exports.createInvoice = async (req, res) => {
+export const createInvoice = async (req, res) => {
   try {
     const { clientId, repairId } = req.body;
 
     // Vérification si la réparation existe
     const repair = await Repair.findById(repairId);
-    if (!repair) return res.status(404).json({ message: "Réparation non trouvée" });
+    if (!repair)
+      return res.status(404).json({ message: "Réparation non trouvée" });
 
     // Création de la facture
     const newInvoice = new Invoice({
@@ -18,8 +19,9 @@ exports.createInvoice = async (req, res) => {
     });
 
     await newInvoice.save();
-    res.status(201).json({ message: "Facture créée avec succès", invoice: newInvoice });
-
+    res
+      .status(201)
+      .json({ message: "Facture créée avec succès", invoice: newInvoice });
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
@@ -27,7 +29,7 @@ exports.createInvoice = async (req, res) => {
 };
 
 //  Récupérer toutes les factures
-exports.getAllInvoices = async (req, res) => {
+export const getAllInvoices = async (req, res) => {
   try {
     const invoices = await Invoice.find()
       .populate("clientId", "name email")
@@ -41,7 +43,7 @@ exports.getAllInvoices = async (req, res) => {
 };
 
 //  Mettre à jour le statut d'une facture
-exports.updateInvoiceStatus = async (req, res) => {
+export const updateInvoiceStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

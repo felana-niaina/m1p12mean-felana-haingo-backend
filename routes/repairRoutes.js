@@ -1,9 +1,14 @@
-const express = require("express");
+import express from "express";
+import {
+  createRepair,
+  getAllRepairs,
+  updateRepairStatus,
+} from "../controllers/repairController.js";
+
 const router = express.Router();
-const repairController = require("../controllers/repairController");
 
-router.post("/", repairController.createRepair);
-router.get("/", repairController.getAllRepairs);
-router.put("/:id/status", repairController.updateRepairStatus);
+router.post("/", createRepair);
+router.get("/", getAllRepairs);
+router.put("/:id/status", updateRepairStatus);
 
-module.exports = router;
+export default router;

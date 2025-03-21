@@ -1,10 +1,16 @@
-const express = require("express");
+import express from "express";
+import {
+  createVehicle,
+  getAllVehicles,
+  getVehiclesByClient,
+  deleteVehicle,
+} from "../controllers/vehicleController.js";
+
 const router = express.Router();
-const vehicleController = require("../controllers/vehicleController");
 
-router.post("/", vehicleController.createVehicle);
-router.get("/", vehicleController.getAllVehicles);
-router.get("/:ownerId", vehicleController.getVehiclesByClient);
-router.delete("/:id", vehicleController.deleteVehicle);
+router.post("/", createVehicle);
+router.get("/", getAllVehicles);
+router.get("/:ownerId", getVehiclesByClient);
+router.delete("/:id", deleteVehicle);
 
-module.exports = router;
+export default router;

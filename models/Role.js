@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const roleSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
-    name: { type: String, required: true, unique: true }
-  });
+  _id: mongoose.Schema.Types.ObjectId,
+  name: { type: String, required: true, unique: true },
+});
 
-module.exports = mongoose.model("Role", roleSchema);
+export default mongoose.model("Role", roleSchema);

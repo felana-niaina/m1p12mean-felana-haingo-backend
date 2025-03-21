@@ -1,7 +1,7 @@
-const Appointment = require("../models/Appointment");
+import Appointment from "../models/Appointment.js";
 
 //  Créer un rendez-vous
-exports.createAppointment = async (req, res) => {
+export const createAppointment = async (req, res) => {
   try {
     const { clientId, mecanicienId, vehicleId, date } = req.body;
 
@@ -19,8 +19,12 @@ exports.createAppointment = async (req, res) => {
     });
 
     await newAppointment.save();
-    res.status(201).json({ message: "Rendez-vous créé avec succès", appointment: newAppointment });
-
+    res
+      .status(201)
+      .json({
+        message: "Rendez-vous créé avec succès",
+        appointment: newAppointment,
+      });
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
@@ -28,13 +32,13 @@ exports.createAppointment = async (req, res) => {
 };
 
 //  Récupérer tous les rendez-vous
-exports.getAllAppointments = async (req, res) => {
+export const getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find()
       .populate("clientId", "name email")
       .populate("mecanicienId", "name specialty")
       .populate("vehicleId", "brand model");
-      
+
     res.status(200).json(appointments);
   } catch (error) {
     console.error("Erreur serveur :", error);
@@ -43,7 +47,7 @@ exports.getAllAppointments = async (req, res) => {
 };
 
 //  Mettre à jour le statut d'un rendez-vous
-exports.updateAppointmentStatus = async (req, res) => {
+export const updateAppointmentStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -63,5 +67,4 @@ exports.updateAppointmentStatus = async (req, res) => {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
-  
 };

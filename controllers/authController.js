@@ -1,32 +1,35 @@
-const { SECRET_JWT_CODE } = require("../constant/utils");
-const User = require("../models/User");
-const Role = require("../models/Role");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import { SECRET_JWT_CODE } from "../constant/utils.js";
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const JWT_EXPIRES_IN = "3600"; // Expiration du token
 
 // Connexion d'un utilisateur
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body.data;
 
     // Vérifier si l'utilisateur existe
     const user = await User.findOne({ email }).populate("role");
     if (!user) {
-      return res.status(400).json({ message: "Email ou mot de passe incorrect" });
+      return res
+        .status(400)
+        .json({ message: "Email ou mot de passe incorrect" });
     }
 
     // Vérifier le mot de passe
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Email ou mot de passe incorrect" });
+      return res
+        .status(400)
+        .json({ message: "Email ou mot de passe incorrect" });
     }
 
     // Générer un token JWT
     const token = jwt.sign(
-      { userId: user._id, role: user.role.name }, 
-      SECRET_JWT_CODE, 
+      { userId: user._id, role: user.role.name },
+      SECRET_JWT_CODE,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
@@ -42,7 +45,7 @@ exports.login = async (req, res) => {
 };
 
 // Middleware pour vérifier le token
-exports.verifyToken = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // "Bearer TOKEN"
     if (!token) return res.status(401).json({ message: "Accès non autorisé" });
@@ -56,10 +59,11 @@ exports.verifyToken = (req, res, next) => {
 };
 
 // Récupérer les infos de l'utilisateur connecté
-exports.getCurrentUser = async (req, res) => {
+export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).populate("role");
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
 
     res.status(200).json(user);
   } catch (error) {
@@ -67,7 +71,7 @@ exports.getCurrentUser = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+// Déconnexion de l'utilisateur
+export const logout = async (req, res) => {
   res.status(200).json({ message: "Déconnexion réussie" });
 };
-
