@@ -1,7 +1,7 @@
-const Repair = require("../models/Repair");
+import Repair from "../models/Repair";
 
-//  Créer une réparation
-exports.createRepair = async (req, res) => {
+// Créer une réparation
+export const createRepair = async (req, res) => {
   try {
     const { appointmentId, description, cost } = req.body;
 
@@ -14,23 +14,23 @@ exports.createRepair = async (req, res) => {
     const newRepair = new Repair({
       appointmentId,
       description,
-      cost
+      cost,
     });
 
     await newRepair.save();
-    res.status(201).json({ message: "Réparation créée avec succès", repair: newRepair });
-
+    res
+      .status(201)
+      .json({ message: "Réparation créée avec succès", repair: newRepair });
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
 
-//  Récupérer toutes les réparations
-exports.getAllRepairs = async (req, res) => {
+// Récupérer toutes les réparations
+export const getAllRepairs = async (req, res) => {
   try {
-    const repairs = await Repair.find()
-      .populate("appointmentId");
+    const repairs = await Repair.find().populate("appointmentId");
 
     res.status(200).json(repairs);
   } catch (error) {
@@ -39,8 +39,8 @@ exports.getAllRepairs = async (req, res) => {
   }
 };
 
-//  Mettre à jour le statut d'une réparation
-exports.updateRepairStatus = async (req, res) => {
+// Mettre à jour le statut d'une réparation
+export const updateRepairStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

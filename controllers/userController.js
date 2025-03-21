@@ -1,16 +1,26 @@
-const User = require("../models/User");
-const Role = require("../models/Role");
+import User from "../models/User.js";
+import Role from "../models/Role.js";
 
-const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
-const { mailConfig } = require("../constant/utils");
+import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
+import { mailConfig } from "../constant/utils.js";
 
 let transporter = nodemailer.createTransport(mailConfig);
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
-    const { name, email, phone, password, role, specialty, employees, vehicles } = req.body.data;
-    console.log(req.body.data)
+    const {
+      name,
+      email,
+      phone,
+      password,
+      role,
+      specialty,
+      employees,
+      vehicles,
+    } = req.body.data;
+    console.log(req.body.data);
+
     let mailOption = {
       from: "nirina.felananiaina@gmail.com",
       to: email,
@@ -32,7 +42,8 @@ exports.register = async (req, res) => {
 
     // Vérifier si l'utilisateur existe déjà
     let userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: "Cet email est déjà utilisé" });
+    if (userExists)
+      return res.status(400).json({ message: "Cet email est déjà utilisé" });
 
     // Vérifier si le rôle existe
     const roleData = await Role.findOne({ name: role });
@@ -43,15 +54,15 @@ exports.register = async (req, res) => {
 
     // Créer l'utilisateur
     const newUser = new User({
-        name,
-        email,
-        phone,
-        password: hashedPassword,
-        role: roleData._id, // On stocke l'ID du rôle
-        specialty,
-        employees,
-        vehicles
-      });
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      role: roleData._id, // On stocke l'ID du rôle
+      specialty,
+      employees,
+      vehicles,
+    });
 
     await newUser.save();
     transporter.sendMail(mailOption, (error, info) => {
@@ -61,16 +72,14 @@ exports.register = async (req, res) => {
       console.log("mail sent !");
     });
 
-    
     res.status(201).json({ message: "Utilisateur créé avec succès" });
-
   } catch (error) {
     console.error("Erreur serveur :", error); // Ajoute cette ligne
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
 
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().populate("role"); // Récupérer les utilisateurs avec leurs rôles
     res.status(200).json(users);
@@ -80,14 +89,24 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, password, role, specialty, employees, vehicles } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      role,
+      specialty,
+      employees,
+      vehicles,
+    } = req.body;
 
     // Vérifier si l'utilisateur existe
     let user = await User.findById(id);
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
 
     // Vérifier si le rôle existe
     if (role) {
@@ -111,12 +130,11 @@ exports.updateUser = async (req, res) => {
     }
 
     await user.save();
-    res.status(200).json({ message: "Utilisateur mis à jour avec succès", user });
-
+    res
+      .status(200)
+      .json({ message: "Utilisateur mis à jour avec succès", user });
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
-
-
