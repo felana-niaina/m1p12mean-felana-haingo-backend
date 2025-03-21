@@ -9,7 +9,7 @@ const JWT_EXPIRES_IN = "3600"; // Expiration du token
 // Connexion d'un utilisateur
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body.data;
 
     // Vérifier si l'utilisateur existe
     const user = await User.findOne({ email }).populate("role");
@@ -30,7 +30,10 @@ exports.login = async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    res.status(200).json({ message: "Connexion réussie", token, user });
+    // Définition de l'URL de redirection
+    const redirectTo = user.role.name === "manager" ? "/dashboard" : "/home";
+
+    res.status(200).json({ message: "Connexion réussie", token, user,redirectTo  });
 
   } catch (error) {
     console.error("Erreur serveur :", error);

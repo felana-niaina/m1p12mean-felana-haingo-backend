@@ -35,7 +35,7 @@ app.use("/repairs", repairRoutes);
 app.use("/invoices", invoiceRoutes);
 app.use("/vehicles", vehicleRoutes);
 app.use("/notifications", notificationRoutes);
-app.use("/auth", notificationRoutes);
+app.use("/auth", authRoutes);
 
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
