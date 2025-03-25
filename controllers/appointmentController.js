@@ -1,32 +1,50 @@
 import Appointment from "../models/Appointment.js";
 
 //  Créer un rendez-vous
+// export const createAppointment = async (req, res) => {
+//   try {
+//     const { clientId, mecanicienId, vehicleId, date } = req.body;
+
+//     // Vérifier si tous les champs sont présents
+//     if (!clientId || !mecanicienId || !vehicleId || !date) {
+//       return res.status(400).json({ message: "Tous les champs sont requis" });
+//     }
+
+//     // Créer le rendez-vous
+//     const newAppointment = new Appointment({
+//       clientId,
+//       mecanicienId,
+//       vehicleId,
+//       date,
+//     });
+
+//     await newAppointment.save();
+//     res
+//       .status(201)
+//       .json({
+//         message: "Rendez-vous créé avec succès",
+//         appointment: newAppointment,
+//       });
+//   } catch (error) {
+//     console.error("Erreur serveur :", error);
+//     res.status(500).json({ message: "Erreur serveur", error: error.message });
+//   }
+// };
+
 export const createAppointment = async (req, res) => {
   try {
-    const { clientId, mecanicienId, vehicleId, date } = req.body;
-
-    // Vérifier si tous les champs sont présents
-    if (!clientId || !mecanicienId || !vehicleId || !date) {
-      return res.status(400).json({ message: "Tous les champs sont requis" });
-    }
-
-    // Créer le rendez-vous
+    const { clientId, vehicleId, date } = req.body;
     const newAppointment = new Appointment({
       clientId,
-      mecanicienId,
       vehicleId,
       date,
     });
-
     await newAppointment.save();
-    res
-      .status(201)
-      .json({
-        message: "Rendez-vous créé avec succès",
-        appointment: newAppointment,
-      });
-  } catch (error) {
-    console.error("Erreur serveur :", error);
+    res.status(201).json({
+      message: "Rendez-vous créé avec succès",
+      appointment: newAppointment,
+    });
+  } catch {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
