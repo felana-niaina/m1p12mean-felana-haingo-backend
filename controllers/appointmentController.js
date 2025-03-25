@@ -44,7 +44,7 @@ export const createAppointment = async (req, res) => {
       message: "Rendez-vous créé avec succès",
       appointment: newAppointment,
     });
-  } catch {
+  } catch(error) {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
