@@ -15,7 +15,7 @@ export const register = async (req, res) => {
       phone,
       password,
       role,
-      specialty,
+      speciality,
       employees,
       vehicles,
     } = req.body.data;
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
                 </head>
                 <body>
                     <h3>Bienvenue chez repairing car service</h3>
-                    <p>Veuillez cliquer le bouton ci-dessous pour consulter votre profil :</p>
+                    <p>Veuillez cliquer le bouton ci-dessous pour vous connecter et prendre un rendez-vous :</p>
                     <button><a href="">Consulter</a></button>
                 </body>
                 </html>`,
@@ -59,7 +59,7 @@ export const register = async (req, res) => {
       phone,
       password: hashedPassword,
       role: roleData._id, // On stocke l'ID du rôle
-      specialty,
+      speciality,
       employees,
       vehicles,
     });
@@ -138,3 +138,33 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+
+// Controller pour récupérer les utilisateurs par rôle
+export const getUsersByRole = async (req, res) => {
+  
+  const { roleName } = req.params; // Récupérer le nom du rôle depuis les paramètres de la requête
+  console.log("roleName",roleName)
+  try {
+    // Trouver le rôle par son nom
+    const role = await Role.findOne({ name: roleName });
+
+    if (!role) {
+      return res.status(404).json({ message: `Rôle ${roleName} non trouvé.` });
+    }
+
+    // Rechercher les utilisateurs ayant ce rôle (en utilisant l'ID du rôle)
+    const users = await User.find({ role: role._id }).populate("role");
+
+    if (!users.length) {
+      return res.status(404).json({ message: "Aucun utilisateur trouvé pour ce rôle." });
+    }
+
+    console.log("Utilisateurs récupérés : ", users); // Afficher les utilisateurs avec leur rôle
+
+    res.status(200).json(role); // Retourner les utilisateurs
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
