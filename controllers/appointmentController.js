@@ -1,36 +1,5 @@
 import Appointment from "../models/Appointment.js";
 
-//  Créer un rendez-vous
-// export const createAppointment = async (req, res) => {
-//   try {
-//     const { clientId, mecanicienId, vehicleId, date } = req.body;
-
-//     // Vérifier si tous les champs sont présents
-//     if (!clientId || !mecanicienId || !vehicleId || !date) {
-//       return res.status(400).json({ message: "Tous les champs sont requis" });
-//     }
-
-//     // Créer le rendez-vous
-//     const newAppointment = new Appointment({
-//       clientId,
-//       mecanicienId,
-//       vehicleId,
-//       date,
-//     });
-
-//     await newAppointment.save();
-//     res
-//       .status(201)
-//       .json({
-//         message: "Rendez-vous créé avec succès",
-//         appointment: newAppointment,
-//       });
-//   } catch (error) {
-//     console.error("Erreur serveur :", error);
-//     res.status(500).json({ message: "Erreur serveur", error: error.message });
-//   }
-// };
-
 export const createAppointment = async (req, res) => {
   try {
     const { clientId, vehicleId, date } = req.body;
@@ -44,7 +13,7 @@ export const createAppointment = async (req, res) => {
       message: "Rendez-vous créé avec succès",
       appointment: newAppointment,
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
@@ -55,7 +24,7 @@ export const getAllAppointments = async (req, res) => {
     const appointments = await Appointment.find()
       .populate("clientId", "name email")
       .populate("mecanicienId", "name specialty")
-      .populate("vehicleId", "brand model");
+      .populate("vehicleId", "model");
 
     res.status(200).json(appointments);
   } catch (error) {
@@ -81,6 +50,27 @@ export const updateAppointmentStatus = async (req, res) => {
     }
 
     res.status(200).json({ message: "Statut mis à jour", appointment });
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+// Récupérer un rendez-vous par son ID
+export const getOneAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("id" , id);
+
+    const appointment = await Appointment.findById(id)
+      .populate("clientId", "name email")
+      .populate("mecanicienId", "name specialty")
+      .populate("vehicleId", "model");
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Rendez-vous non trouvé" });
+    }
+
+    res.status(200).json(appointment);
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
