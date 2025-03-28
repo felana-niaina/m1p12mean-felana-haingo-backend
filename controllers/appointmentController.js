@@ -84,6 +84,89 @@ export const getOneAppointment = async (req, res) => {
   }
 };
 
+export const getAppointmentsSummary = async (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  // Vérifier si les dates sont valides
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: "Les dates de début et de fin sont requises." });
+  }
+
+  // Vérifier si les dates sont valides
+  if (!isValidDate(startDate) || !isValidDate(endDate)) {
+    return res.status(400).json({ message: "Les dates doivent être valides." });
+  }
+
+  try {
+    // Convertir les dates en objets Date pour MongoDB
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Vérifier si la conversion en Date a bien fonctionné
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({ message: "Les dates sont invalides." });
+    }
+
+    // Requête d'agrégation pour le résumé des rendez-vous
+    const appointments = await Appointment.aggregate([
+      {
+        $match: {
+          date: { $gte: start, $lte: end },
+        }
+      },
+      {
+        $group: {
+          _id: "$status",  // Groupement par statut
+          count: { $sum: 1 },  // Nombre de rendez-vous pour chaque statut
+        }
+      }
+    ]);
+    
+    // Améliorer la réponse si nécessaire
+    const result = appointments.map(item => ({
+      status: item._id,
+      count: item.count
+    }));
+    
+    return res.status(200).json(result);
+    
+
+    // Si aucune donnée n'est trouvée
+    if (appointments.length === 0) {
+      return res.status(200).json({ message: "Aucun rendez-vous trouvé pour cette période." });
+    }
+
+    return res.status(200).json(appointments);
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    return res.status(500).json({
+      message: "Erreur serveur, veuillez réessayer plus tard.",
+      error: error.message,
+    });
+  }
+};
+
+export const getRecentAppointmentsToValidate = async (req , res) => {
+  try {
+    const pendingAppointmentsCount = await Appointment.countDocuments({ status: "en attente" });
+    res.status(200).json({ pendingAppointmentsCount });
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+
+
+// Fonction utilitaire pour vérifier la validité d'une date
+const isValidDate = (date) => {
+  return !isNaN(Date.parse(date));
+};
+
+
+
+
+
 // Accepter un rendez-vous et envoyer une notification
 export const acceptAppointment = async (req, res) => {
   try {

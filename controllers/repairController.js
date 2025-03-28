@@ -84,7 +84,9 @@ export const getTotalRepairs = async (req, res) => {
 
     // Vérifier si la date de fin est postérieure à la date de début
     if (start > end) {
-      return res.status(400).json({ message: "La date de fin doit être après la date de début." });
+      return res
+        .status(400)
+        .json({ message: "La date de fin doit être après la date de début." });
     }
 
     // Récupérer le nombre total de réparations terminées dans la période
