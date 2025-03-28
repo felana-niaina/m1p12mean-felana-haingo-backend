@@ -4,7 +4,7 @@ import User from "../models/User.js";
 //  Envoyer une notification
 export const createNotification = async (req, res) => {
   try {
-    const { userId, message } = req.body;
+    const { userId,appointmentId, message } = req.body;
 
     // Vérifier si l'utilisateur existe
     const user = await User.findById(userId);
@@ -24,17 +24,13 @@ export const createNotification = async (req, res) => {
 };
 
 //  Récupérer les notifications d'un utilisateur
-export const getUserNotifications = async (req, res) => {
+export const getNotifications = async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    const notifications = await Notification.find({ userId }).sort({
-      createdAt: -1,
-    });
+    const { userId } = req.params; 
+    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }); // Récupérer les notifications de cet utilisateur
     res.status(200).json(notifications);
   } catch (error) {
-    console.error("Erreur serveur :", error);
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 };
 
