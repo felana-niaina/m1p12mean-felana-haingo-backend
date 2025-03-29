@@ -6,12 +6,14 @@ import {
   getOneAppointment,
   getRecentAppointmentsToValidate,
   updateAppointmentStatus,
-  acceptAppointment
+  acceptAppointment,
+  getUnavailableDates
 } from "../controllers/appointmentController.js";
 
 const router = express.Router();
 
 router.get("/recent" , getRecentAppointmentsToValidate);
+router.get("/unavailableDate" , getUnavailableDates)
 router.post("/", createAppointment);
 router.post("/accept", acceptAppointment);
 router.get("/allAppointments", getAllAppointments);

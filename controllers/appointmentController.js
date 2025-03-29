@@ -139,6 +139,23 @@ export const getRecentAppointmentsToValidate = async (req , res) => {
   }
 };
 
+export const getUnavailableDates = async (req, res) => {
+  try {
+    // Récupérer tous les rendez-vous confirmés
+    const confirmedAppointments = await Appointment.find(
+      { status: "confirmé" }, // Filtrer les rendez-vous confirmés
+      { date: 1, _id: 0 } // Ne récupérer que la date
+    );
+
+    // Extraire uniquement les dates
+    const unavailableDates = confirmedAppointments.map(appointment => appointment.date);
+
+    res.status(200).json({ unavailableDates });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la récupération des dates indisponibles" });
+  }
+};
+
 
 
 // Fonction utilitaire pour vérifier la validité d'une date
@@ -216,3 +233,4 @@ export const acceptAppointment = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+
