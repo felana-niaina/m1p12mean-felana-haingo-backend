@@ -84,6 +84,72 @@ export const getOneAppointment = async (req, res) => {
   }
 };
 
+export const getAppointmentsSummary = async (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  // Vérifier si les dates sont valides
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: "Les dates de début et de fin sont requises." });
+  }
+
+  // Vérifier si les dates sont valides
+  if (!isValidDate(startDate) || !isValidDate(endDate)) {
+    return res.status(400).json({ message: "Les dates doivent être valides." });
+  }
+
+  try {
+    const appointments = await Appointment.aggregate([
+      {
+        $match: {
+          date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        }
+      },
+      {
+        $group: {
+          _id: "$status",  // Grouping by status
+          count: { $sum: 1 },  // Counting the number of appointments per status
+        }
+      },
+      {
+        $project: { 
+          status: "$_id", // Renaming _id to status
+          count: 1, 
+          _id: 0  // Excluding _id from the result
+        }
+      }
+    ]);
+
+    // Renvoie le tableau des statuts et leurs comptages
+    return res.status(200).json(appointments);
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    return res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+
+
+export const getRecentAppointmentsToValidate = async (req , res) => {
+  try {
+    const pendingAppointmentsCount = await Appointment.countDocuments({ status: "en attente" });
+    res.status(200).json({ pendingAppointmentsCount });
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+
+
+// Fonction utilitaire pour vérifier la validité d'une date
+const isValidDate = (date) => {
+  return !isNaN(Date.parse(date));
+};
+
+
+
+
+
 // Accepter un rendez-vous et envoyer une notification
 export const acceptAppointment = async (req, res) => {
   try {
