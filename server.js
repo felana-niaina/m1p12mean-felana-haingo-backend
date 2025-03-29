@@ -11,6 +11,7 @@ import invoiceRoutes from "./routes/invoiceRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import serviceRoutes from "./routes/serviceRoutes.js"
 
 dotenv.config();
 
@@ -40,5 +41,7 @@ app.use("/invoices", invoiceRoutes);
 app.use("/vehicles", vehicleRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/auth", authRoutes);
+app.use("/services", serviceRoutes);
+
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
