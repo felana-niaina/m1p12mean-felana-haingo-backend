@@ -14,7 +14,6 @@ const router = express.Router();
 router.get("/recent" , getRecentAppointmentsToValidate);
 router.post("/", createAppointment);
 router.post("/accept", acceptAppointment);
-router.get("/", getAllAppointments);
 router.get("/allAppointments", getAllAppointments);
 router.put("/:id/status", updateAppointmentStatus);
 router.get("/:id", getOneAppointment);

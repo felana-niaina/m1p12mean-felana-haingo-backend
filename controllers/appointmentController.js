@@ -98,53 +98,36 @@ export const getAppointmentsSummary = async (req, res) => {
   }
 
   try {
-    // Convertir les dates en objets Date pour MongoDB
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Vérifier si la conversion en Date a bien fonctionné
-    if (isNaN(start) || isNaN(end)) {
-      return res.status(400).json({ message: "Les dates sont invalides." });
-    }
-
-    // Requête d'agrégation pour le résumé des rendez-vous
     const appointments = await Appointment.aggregate([
       {
         $match: {
-          date: { $gte: start, $lte: end },
+          date: { $gte: new Date(startDate), $lte: new Date(endDate) },
         }
       },
       {
         $group: {
-          _id: "$status",  // Groupement par statut
-          count: { $sum: 1 },  // Nombre de rendez-vous pour chaque statut
+          _id: "$status",  // Grouping by status
+          count: { $sum: 1 },  // Counting the number of appointments per status
+        }
+      },
+      {
+        $project: { 
+          status: "$_id", // Renaming _id to status
+          count: 1, 
+          _id: 0  // Excluding _id from the result
         }
       }
     ]);
-    
-    // Améliorer la réponse si nécessaire
-    const result = appointments.map(item => ({
-      status: item._id,
-      count: item.count
-    }));
-    
-    return res.status(200).json(result);
-    
 
-    // Si aucune donnée n'est trouvée
-    if (appointments.length === 0) {
-      return res.status(200).json({ message: "Aucun rendez-vous trouvé pour cette période." });
-    }
-
+    // Renvoie le tableau des statuts et leurs comptages
     return res.status(200).json(appointments);
   } catch (error) {
     console.error("Erreur serveur :", error);
-    return res.status(500).json({
-      message: "Erreur serveur, veuillez réessayer plus tard.",
-      error: error.message,
-    });
+    return res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+
+
 
 export const getRecentAppointmentsToValidate = async (req , res) => {
   try {

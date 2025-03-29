@@ -105,6 +105,54 @@ export const getTotalRepairs = async (req, res) => {
   }
 };
 
+export const getRepairsStatusSummary = async (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  // Vérification des dates
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: "Les dates de début et de fin sont requises." });
+  }
+
+  try {
+    // Convertir les dates en objets Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Obtenir le nombre de réparations en cours et terminées dans la période
+    const repairsSummary = await Repair.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end },
+        }
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        }
+      }
+    ]);
+
+    // Formater les résultats pour renvoyer un objet avec les données de chaque statut
+    const repairsData = {
+      enCours: 0,
+      termine: 0
+    };
+
+    repairsSummary.forEach(item => {
+      if (item._id === "en cours") repairsData.enCours = item.count;
+      if (item._id === "terminé") repairsData.termine = item.count;
+    });
+
+    return res.status(200).json(repairsData);
+  } catch (error) {
+    console.error("Erreur serveur:", error);
+    return res.status(500).json({
+      message: "Erreur serveur, veuillez réessayer plus tard.",
+      error: error.message,
+    });
+  }
+};
 // Fonction utilitaire pour vérifier la validité d'une date
 const isValidDate = (date) => {
   return !isNaN(Date.parse(date));
