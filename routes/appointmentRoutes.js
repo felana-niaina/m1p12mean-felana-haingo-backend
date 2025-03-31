@@ -7,7 +7,8 @@ import {
   getRecentAppointmentsToValidate,
   updateAppointmentStatus,
   acceptAppointment,
-  getUnavailableDates
+  getUnavailableDates,
+  assignMechanic
 } from "../controllers/appointmentController.js";
 
 const router = express.Router();
@@ -16,6 +17,7 @@ router.get("/recent" , getRecentAppointmentsToValidate);
 router.get("/unavailableDate" , getUnavailableDates)
 router.post("/", createAppointment);
 router.post("/accept", acceptAppointment);
+router.post("/assignMechanic", assignMechanic);
 router.get("/allAppointments", getAllAppointments);
 router.put("/:id/status", updateAppointmentStatus);
 router.get("/:id", getOneAppointment);

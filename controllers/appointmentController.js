@@ -1,7 +1,7 @@
 import Appointment from "../models/Appointment.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
-
+import Repair from "../models/Repair.js"
 import nodemailer from "nodemailer";
 import { mailConfig } from "../constant/utils.js";
 
@@ -77,7 +77,14 @@ export const getOneAppointment = async (req, res) => {
       return res.status(404).json({ message: "Rendez-vous non trouvé" });
     }
 
-    res.status(200).json(appointment);
+    const repair = await Repair.findOne({ appointmentId: id }).select("cost");
+
+    if (!repair) {
+      return res.status(404).json({ message: "Réparation non trouvée pour ce rendez-vous" });
+    }
+    const repairCost = repair ? repair.cost : null;
+
+    res.status(200).json({ appointment, repairCost });
   } catch (error) {
     console.error("Erreur serveur :", error);
     res.status(500).json({ message: "Erreur serveur", error: error.message });
@@ -163,10 +170,6 @@ const isValidDate = (date) => {
   return !isNaN(Date.parse(date));
 };
 
-
-
-
-
 // Accepter un rendez-vous et envoyer une notification
 export const acceptAppointment = async (req, res) => {
   try {
@@ -211,6 +214,84 @@ export const acceptAppointment = async (req, res) => {
                 <body>
                     <h3>Bonjour ${client.email},</h3>
                     <p>Votre rendez-vous chez repairing car a été validé, Merci.</p>
+                    <span>Cordialement,</span>
+                </body>
+                </html>`,
+    };
+
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        return console.log("error sendMail ::::", error.message);
+      }
+      console.log("mail sent !");
+    });
+
+    res.status(200).json({
+      message: "Rendez-vous accepté et notification envoyée",
+      appointment,
+      notification,
+    });
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+export const assignMechanic = async (req, res) => {
+  try {
+    const { appointmentId,idMecanicien,repairCost } = req.body;
+
+    const appointment = await Appointment.findById(appointmentId)
+      .populate({ path: "clientId", select: "name email _id" })
+      .populate("vehicleId");
+
+    if (!appointment)
+      return res.status(404).json({ message: "Rendez-vous non trouvé" });
+
+    appointment.mecanicienId = req.body.idMecanien;
+    await appointment.save();
+
+    
+    const client = appointment.clientId;
+    if (!client) {
+      return res.status(404).json({ message: "Client lié non trouvé" });
+    }
+
+  
+    const message = `La réparation de votre véhicule ${appointment.vehicleId.model} est en cours.`;
+
+    
+    const notification = new Notification({ userId: client._id,appointmentId: appointment._id, message });
+    await notification.save();
+
+    
+
+     // Créer un nouvel enregistrement dans la table Repair
+     const newRepair = new Repair({
+      appointmentId: appointment._id,
+      mecanicienId: req.body.idMecanien,
+      description: `Réparation programmée pour ${appointment.vehicleId.model}`,
+      status: "à faire",
+      cost: repairCost, // À définir ultérieurement
+    });
+    console.log(newRepair)
+    await newRepair.save();
+
+    //Envoie de mail au client
+    let mailOption = {
+      from: "nirina.felananiaina@gmail.com",
+      to: client.email,
+      subject: "Car repairing",
+      html: `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Document</title>
+                </head>
+                <body>
+                    <h3>Bonjour ${client.email},</h3>
+                    <p>Suite à votre rendez-vous chez repairing car , votre véhicule ${appointment.vehicleId.model} est en cours de réparation maintenant, Merci.</p>
                     <span>Cordialement,</span>
                 </body>
                 </html>`,
