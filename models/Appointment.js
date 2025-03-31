@@ -12,6 +12,7 @@ const AppointmentSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     }, // Référence au mécanicien
+    description: { type: String, required: true },
     vehicleId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vehicle",

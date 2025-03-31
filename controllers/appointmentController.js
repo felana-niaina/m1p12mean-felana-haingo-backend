@@ -9,11 +9,12 @@ let transporter = nodemailer.createTransport(mailConfig);
 
 export const createAppointment = async (req, res) => {
   try {
-    const { clientId, vehicleId, date } = req.body;
+    const { clientId, vehicleId, date , description } = req.body;
     const newAppointment = new Appointment({
       clientId,
       vehicleId,
       date,
+      description
     });
     await newAppointment.save();
     res.status(201).json({
