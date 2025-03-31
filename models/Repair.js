@@ -7,6 +7,11 @@ const RepairSchema = new mongoose.Schema(
       ref: "Appointment",
       required: true,
     }, // Référence au rendez-vous
+    mecanicienId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     description: { type: String, required: true },
     status: {
       type: String,

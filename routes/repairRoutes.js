@@ -2,6 +2,7 @@ import express from "express";
 import {
   createRepair,
   getAllRepairs,
+  getMechanicRepairs,
   getRepairsStatusSummary,
   getTotalRepairs,
   updateRepairStatus,
@@ -14,5 +15,6 @@ router.get("/", getAllRepairs);
 router.put("/:id/status", updateRepairStatus);
 router.get("/totalRepairs" , getTotalRepairs);
 router.get("/summary" , getRepairsStatusSummary);
+router.get("/mechanicRepairs" , getMechanicRepairs);
 
 export default router;

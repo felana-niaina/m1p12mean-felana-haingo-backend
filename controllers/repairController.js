@@ -153,6 +153,24 @@ export const getRepairsStatusSummary = async (req, res) => {
     });
   }
 };
+
+export const getMechanicRepairs = async (req, res) => {
+  try {
+    const { mecanicienId } = req.query;
+    if (!mecanicienId) {
+      return res.status(400).json({ message: "L'ID du mécanicien est requis" });
+    }
+    const repairs = await Repair.find({ mecanicienId })
+      .populate("appointmentId", "description")
+      .populate("appointmentId.clientId", "name email")
+      .populate("appointmentId.vehicleId", "model");
+
+    res.status(200).json(repairs);
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+}
 // Fonction utilitaire pour vérifier la validité d'une date
 const isValidDate = (date) => {
   return !isNaN(Date.parse(date));

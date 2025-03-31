@@ -234,4 +234,3 @@ export const acceptAppointment = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
-
