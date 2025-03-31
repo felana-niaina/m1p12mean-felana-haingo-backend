@@ -161,9 +161,15 @@ export const getMechanicRepairs = async (req, res) => {
       return res.status(400).json({ message: "L'ID du mécanicien est requis" });
     }
     const repairs = await Repair.find({ mecanicienId })
-      .populate("appointmentId", "description")
-      .populate("appointmentId.clientId", "name email")
-      .populate("appointmentId.vehicleId", "model");
+      .select("description status cost")
+      .populate({
+        path: "appointmentId",
+        select: "description date",
+        populate: [
+          { path: "clientId", select: "name email" },
+          { path: "vehicleId", select: "model" }
+        ]
+      });
 
     res.status(200).json(repairs);
   } catch (error) {
