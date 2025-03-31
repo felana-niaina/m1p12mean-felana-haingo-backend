@@ -80,9 +80,6 @@ export const getOneAppointment = async (req, res) => {
 
     const repair = await Repair.findOne({ appointmentId: id }).select("cost");
 
-    if (!repair) {
-      return res.status(404).json({ message: "Réparation non trouvée pour ce rendez-vous" });
-    }
     const repairCost = repair ? repair.cost : null;
 
     res.status(200).json({ appointment, repairCost });
