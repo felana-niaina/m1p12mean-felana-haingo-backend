@@ -3,6 +3,7 @@ import {
   createRepair,
   getAllRepairs,
   getMechanicRepairs,
+  getMechanicsWithCompletedRepairs,
   getRepairsStatusSummary,
   getTotalRepairs,
   updateRepairStatus,
@@ -16,5 +17,5 @@ router.put("/:id/status", updateRepairStatus);
 router.get("/totalRepairs" , getTotalRepairs);
 router.get("/summary" , getRepairsStatusSummary);
 router.get("/mechanicRepairs" , getMechanicRepairs);
-
+router.get('/mechanic-repair-performance', getMechanicsWithCompletedRepairs);
 export default router;
