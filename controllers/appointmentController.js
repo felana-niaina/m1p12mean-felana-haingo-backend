@@ -313,3 +313,39 @@ export const assignMechanic = async (req, res) => {
   }
 };
 
+
+// Récupération la liste des rendez-vous par client
+export const getAppointmentsByClient = async (req, res) => {
+  const { clientId } = req.params; 
+  try {
+    if (!clientId) {
+      return res.status(400).json({ message: "L'ID du client est requis." });
+    }
+
+    const appointments = await Appointment.find({ clientId }).populate("vehicleId", "model");
+
+
+    if (!appointments.length) {
+      return res.status(200).json([]);
+    }
+
+    
+    const appointmentsWithRepairStatus = await Promise.all(
+      appointments.map(async (appointment) => {
+        const repair = await Repair.findOne({ appointmentId: appointment._id }).select("status");
+
+        
+        return {
+          ...appointment.toObject(),
+          repairStatus: repair ? repair.status : "Non renseigné", 
+        };
+      })
+    );
+
+   
+    return res.status(200).json(appointmentsWithRepairStatus);
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    return res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};

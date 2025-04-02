@@ -37,7 +37,7 @@ export const login = async (req, res) => {
     const redirectTo =
       user.role.name === "manager" ? "/dashboard" :
         user.role.name === "mecanicien" ? "/repairs" :
-          "/appointment";
+          "/historiques";
 
 
     res.status(200).json({ message: "Connexion réussie", token, user, redirectTo, userId: user._id });
