@@ -34,9 +34,13 @@ export const login = async (req, res) => {
     );
 
     // Définition de l'URL de redirection
-    const redirectTo = user.role.name === "manager" ? "/dashboard" : "/appointment";
+    const redirectTo =
+      user.role.name === "manager" ? "/dashboard" :
+        user.role.name === "mecanicien" ? "/repairs" :
+          "/appointment";
 
-    res.status(200).json({ message: "Connexion réussie", token, user,redirectTo , userId : user._id });
+
+    res.status(200).json({ message: "Connexion réussie", token, user, redirectTo, userId: user._id });
 
   } catch (error) {
     console.error("Erreur serveur :", error);
