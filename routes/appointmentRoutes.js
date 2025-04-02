@@ -8,7 +8,8 @@ import {
   updateAppointmentStatus,
   acceptAppointment,
   getUnavailableDates,
-  assignMechanic
+  assignMechanic,
+  getAppointmentsByClient
 } from "../controllers/appointmentController.js";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get("/allAppointments", getAllAppointments);
 router.put("/:id/status", updateAppointmentStatus);
 router.get("/:id", getOneAppointment);
 router.get("/", getAppointmentsSummary);
+router.get("/historiques",getAppointmentsByClient );
 
 
 export default router;
