@@ -317,7 +317,7 @@ export const assignMechanic = async (req, res) => {
 // Récupération la liste des rendez-vous par client
 export const getAppointmentsByClient = async (req, res) => {
   const { clientId } = req.query; 
-
+  console.log (clientId)
   try {
     if (!clientId) {
       return res.status(400).json({ message: "L'ID du client est requis." });
