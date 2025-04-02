@@ -23,7 +23,7 @@ router.get("/allAppointments", getAllAppointments);
 router.put("/:id/status", updateAppointmentStatus);
 router.get("/:id", getOneAppointment);
 router.get("/", getAppointmentsSummary);
-router.get("/historiques",getAppointmentsByClient );
+router.get("/historiques/:clientId",getAppointmentsByClient );
 
 
 export default router;
