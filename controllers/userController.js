@@ -226,7 +226,7 @@ export const registerWithOTP = async (req, res) => {
       name,
       email,
       phone,
-      password: hashedTempPassword, // Pas de mot de passe initial
+      password: hashedTempPassword,
       role: roleData._id,
       specialty: speciality,
       otp, // Stocker l'OTP temporaire
