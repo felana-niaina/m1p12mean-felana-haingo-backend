@@ -219,13 +219,14 @@ export const registerWithOTP = async (req, res) => {
 
     // Générer un OTP
     const otp = generateOTP();
+    const hashedTempPassword = await bcrypt.hash(otp, 10);
 
     // Création de l'utilisateur avec un OTP temporaire
     const newUser = new User({
       name,
       email,
       phone,
-      password: null, // Pas de mot de passe initial
+      password: hashedTempPassword, // Pas de mot de passe initial
       role: roleData._id,
       specialty: speciality,
       otp, // Stocker l'OTP temporaire
