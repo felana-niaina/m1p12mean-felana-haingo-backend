@@ -4,6 +4,7 @@ import Role from "../models/Role.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import { mailConfig } from "../constant/utils.js";
+import crypto from "crypto";
 
 let transporter = nodemailer.createTransport(mailConfig);
 
@@ -192,5 +193,81 @@ export const updateUserStatus = async (req, res) => {
   } catch (error) {
     console.error("Erreur lors de la mise à jour du statut :", error);
     res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+// Fonction pour générer un OTP aléatoire à 6 chiffres
+const generateOTP = () => {
+  return crypto.randomInt(100000, 999999).toString();
+};
+
+// Controller pour enregistrer un mécanicien avec un OTP
+export const registerWithOTP = async (req, res) => {
+  try {
+    const { name, email, phone, speciality } = req.body.data;
+
+    console.log("Spécialité reçue:", req.body.data.speciality);
+
+    // Vérification si l'utilisateur existe déjà
+    let userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "Cet email est déjà utilisé" });
+    }
+
+    // Vérification du rôle "mécanicien"
+    const roleData = await Role.findOne({ name: "mecanicien" });
+    if (!roleData) return res.status(400).json({ message: "Rôle invalide" });
+
+    // Générer un OTP
+    const otp = generateOTP();
+
+    // Création de l'utilisateur avec un OTP temporaire
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password: null, // Pas de mot de passe initial
+      role: roleData._id,
+      specialty: speciality,
+      otp, // Stocker l'OTP temporaire
+      otpExpires: new Date(Date.now() + 10 * 60 * 1000), // Expiration dans 10 minutes
+    });
+
+    await newUser.save();
+
+    // Configuration de l'email
+    let mailOption = {
+      from: "nirina.felananiaina@gmail.com",
+      to: email,
+      subject: "Votre compte mécanicien - OTP de connexion",
+      html: `<!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Activation de compte</title>
+                </head>
+                <body>
+                    <h3>Bienvenue chez Repairing Car Service</h3>
+                    <p>Votre code OTP pour activer votre compte est : <strong>${otp}</strong></p>
+                    <p>Ce code est valable 10 minutes.</p>
+                    <p>Veuillez utiliser ce code pour configurer votre mot de passe.</p>
+                </body>
+                </html>`,
+    };
+
+    // Envoi de l'email
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        console.log("Erreur lors de l'envoi de l'email :", error.message);
+        return res.status(500).json({ message: "Erreur lors de l'envoi de l'email" });
+      }
+      console.log("Email OTP envoyé !");
+      res.status(201).json({ message: "Utilisateur créé avec succès. Vérifiez votre email pour l'OTP." });
+    });
+
+  } catch (error) {
+    console.error("Erreur serveur :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
