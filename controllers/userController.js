@@ -204,9 +204,8 @@ const generateOTP = () => {
 // Controller pour enregistrer un mécanicien avec un OTP
 export const registerWithOTP = async (req, res) => {
   try {
-    const { name, email, phone, speciality } = req.body.data;
+    const { name, email, phone,role, speciality } = req.body.data;
 
-    console.log("Spécialité reçue:", req.body.data.speciality);
 
     // Vérification si l'utilisateur existe déjà
     let userExists = await User.findOne({ email });
@@ -215,7 +214,7 @@ export const registerWithOTP = async (req, res) => {
     }
 
     // Vérification du rôle "mécanicien"
-    const roleData = await Role.findOne({ name: "mecanicien" });
+    const roleData = await Role.findOne({ name: role });
     if (!roleData) return res.status(400).json({ message: "Rôle invalide" });
 
     // Générer un OTP
