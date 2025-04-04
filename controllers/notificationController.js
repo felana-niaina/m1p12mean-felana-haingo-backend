@@ -30,7 +30,7 @@ export const getNotifications = async (req, res) => {
     const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }); // Récupérer les notifications de cet utilisateur
     res.status(200).json(notifications);
   } catch (error) {
-    res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    // res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 };
 
